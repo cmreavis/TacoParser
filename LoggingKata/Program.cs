@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.IO;
+using System.Threading;
 using GeoCoordinatePortable;
 using System.Runtime.ExceptionServices;
 
@@ -16,14 +17,19 @@ namespace LoggingKata
             // TODO:  Find the two Taco Bells that are the furthest from one another.
             // HINT:  You'll need two nested forloops ---------------------------
 
-            logger.LogInfo("Log initialized");
-
             // use File.ReadAllLines(path) to grab all the lines from your csv file
             // Log and error if you get 0 lines and a warning if you get 1 line
             var lines = File.ReadAllLines(csvPath);
 
-            logger.LogInfo($"Lines: {lines[0]}");
-
+            logger.LogInfo($"Lines present: {lines.Length}");
+            if (lines.Length < 1)
+            {
+                logger.LogError("ERROR: No lines detected");
+            }
+            if (lines.Length == 1)
+            {
+                logger.LogWarning("WARNING: Only one line detected");
+            }
             // Create a new instance of your TacoParser class
             var parser = new TacoParser();
 
@@ -33,12 +39,14 @@ namespace LoggingKata
             // DON'T FORGET TO LOG YOUR STEPS
 
             // Now that your Parse method is completed, START BELOW ----------
-
+            logger.LogInfo("Begin parsing...");
+         
             // TODO: Create two `ITrackable` variables with initial values of `null`. These will be used to store your two taco bells that are the farthest from each other.
             // Create a `double` variable to store the distance
             ITrackable tacoBellAlpha = null;
             ITrackable tacoBellOmega = null;
             double distance = 0.0;
+            
             // Include the Geolocation toolbox, so you can compare locations: `using GeoCoordinatePortable;`
             
             //HINT NESTED LOOPS SECTION---------------------
@@ -81,7 +89,15 @@ namespace LoggingKata
                     }
                 }  
             }
+            logger.LogInfo("Furthest locations found, calculating distance...");
+            double distanceMiles = distance / 1609;
+            for (int i = 0; i < 3; i++)
+            {
+                Console.WriteLine(".");
+                Thread.Sleep(1000);
+            }
             // Once you've looped through everything, you've found the two Taco Bells farthest away from each other.
+            logger.LogInfo($"{tacoBellAlpha.Name} and {tacoBellOmega.Name} are the furthest away from each other at {distance} meters, or {distanceMiles} miles.");
         }
     }
 }
